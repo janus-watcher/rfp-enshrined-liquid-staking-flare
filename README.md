@@ -3,7 +3,7 @@
 A request for proposal for a **protocol-owned liquid staking layer** on Flare: an algorithmic delegation router with per-entity caps the chain enforces, optionally a protocol-issued token (eFLR) under protocol custody, and the governance envelope that would have to bound it. Written against the September 2026 Sceptre case and the FIP.16 precedent of internalising an extraction the network could not police.
 
 **Author:** Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)<br>
-**Status:** Draft 1 — open for community review · see [CHANGELOG](CHANGELOG.md)
+**Status:** Draft 2 (7 Sep 2026) — open for community review · see [CHANGELOG](CHANGELOG.md)
 
 ---
 
@@ -30,15 +30,16 @@ The router allocates by trust weight × net-yield weight, capped per entity as a
 1. Executive Summary
 2. The Problem — what the current rules measure; what FIP.16 changed; the proxy inevitability; the FIP.16 precedent stated precisely
 3. Precedents — Polkadot nomination pools, Cosmos LSM, Ethereum's road not taken
-4. Scope Options — router only / token / both
+4. Scope Options — router only / token / both; decision matrix with dated conditions
 5. The Settlement Problem — two chains, two delegations; FCC-managed keys vs a P-chain primitive; the exit queue
 6. Architecture — token accounting, capital sources, the router formula, eligibility, trust weight, net-yield weight, cap, correlation
 7. Economics — base rate, fee, who earns what, what the router does to the 20% floor
-8. Governance Envelope — immutable core, timelocked parameters, ragequit, custody outside the Foundation (the four buckles)
-9. Composability — why not to enshrine PT/YT
-10. Open Questions — eight, ordered by design impact
-11. Failure Modes — eight, hardest first
+8. Governance Envelope — immutable core, timelocked parameters, ragequit, custody outside the Foundation (the four buckles), staged transition, deadlock rule
+9. Composability — why not to enshrine PT/YT; eFLR as FAssets collateral
+10. Open Questions — ten, ordered by design impact
+11. Failure Modes — eleven, hardest first, with a monitoring protocol
 12. What Ships First
+Appendix A. Minimum specification for the settlement bridge
 13. Sources
 
 ## Contributing

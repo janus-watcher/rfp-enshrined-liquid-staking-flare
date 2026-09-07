@@ -3,8 +3,8 @@
 **A design document for a protocol-owned liquid staking layer: what it would have to contain, which decisions it forces, and what would kill it.**
 
 Author: Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)  
-Status: Draft 1 — open for community review  
-Date: September 2026  
+Status: Draft 2 — open for community review  
+Date: 7 September 2026 (Draft 1: 6 September 2026)  
 Requires (reading): FIP.02, FIP.05, FIP.10, FIP.16  
 
 *Disclosure: the author holds FLR and sFLR, runs LP positions on Spectra with sFLR as underlying, has had occasional contact with the Spectra team, and has an interest in duration markets on Flare existing. Section 6 cuts against the sFLR position; Section 9 runs with the duration interest. Weigh accordingly.*
@@ -87,6 +87,22 @@ The sparring that produced this document started from "the protocol issues eFLR"
 
 The recommendation of this RFP is C, staged: A first, because it can ship without solving the settlement problem in Section 5 and immediately bounds the pool that exists today; B on the FIP.16 Stage 3 consensus change, because that change already moves where staked funds reside. A alone leaves the four-keys problem in place. B alone leaves Sceptre's 2.4 billion where it is.
 
+### 4.1 Decision matrix
+
+A recommendation without the criteria behind it is an opinion. The criteria, as this RFP weighs them:
+
+| Criterion | Scope A (router) | Scope B (token) | Scope C (both) |
+|---|---|---|---|
+| Bounds the pool that exists today | Yes, at the routing layer | No | Yes |
+| Removes operator custody risk | No | For migrated capital | For migrated capital; private pools keep their keys |
+| Consensus change required | No | Yes (§5.2 ii) or FCC custody (§5.2 i) | Same as B |
+| Governance surface added | Router parameters | Router parameters + custody envelope | Same as B |
+| Time to Songbird | One to two quarters | Tied to Stage 3 | A first, B on Stage 3 |
+| Political cost | Private pools lose selection, keep fees | Foundation competes with sFLR | Both |
+| Regulatory exposure (§11.10) | Low: no new asset | Higher: protocol-issued yield-bearing asset | Same as B |
+
+Two decision conditions, stated as proposals with dates the Foundation should replace with its own. If by the end of Q1 2027 no contract-originated delegation primitive is specified on the Stage 3 path, decide A, ship it on Songbird, and treat B as closed until Stage 3 is scheduled. If a primitive is specified by then and running on Coston2 by Q3 2027, decide C and sequence B behind two Songbird reward-epoch cycles. What this RFP cannot supply is the cost side: engineering effort for the primitive, FCC enclave provisioning, audit budget. Those numbers belong to the core team and are requested in Section 10.
+
 ---
 
 ## 5. The Settlement Problem
@@ -111,6 +127,8 @@ The four keys are not a Sceptre design flaw. They are the only way a C-chain poo
 
 The RFP asks the core team one question above all others: is (ii) on the Stage 3 path, and if not, what would it cost to put it there? Everything in Section 7 assumes the answer to (i) or (ii) is yes.
 
+Between (i) and (ii) the RFP takes a position rather than leaving it as a menu. The enclave route has a single point of failure in the image and its attestation chain, and a compromise there is a loss of the pool with no recovery path except a hard fork (§11.11). The primitive route has consensus risk, which is bounded by Songbird testing and by the fact that Stage 3 already opens the consensus for changes of this kind. A consensus change tested on Songbird is a risk the network has taken before; an enclave holding a multi-billion FLR pool is not. The primitive is the target; the enclave is acceptable only as a bridge with a published sunset. Appendix A sets out the minimum each option would have to specify for the core team to answer with more than "possible".
+
 ### 5.3 Liquidity: the exit queue
 
 P-chain delegation locks for a chosen period, minimum two weeks, and cannot be withdrawn early. A liquid token over locked capital needs either an instant-redemption reserve (Sceptre's model, and the reserve the four keys drew down) or an exit queue with a redemption delay, or both. The sparring draft assumed instant, zero-fee redemption during a governance timelock; that is not achievable against locked P-chain stake without a reserve large enough to honour it.
@@ -129,7 +147,7 @@ Users deposit FLR (or WFLR) and receive eFLR. Two accounting models exist. A reb
 
 Two inflows. User deposits, which are the point. And, as an option the RFP puts on the table rather than assumes, protocol-owned capital: FIRE's mandate already ranks "rewards to FLR validators and stakers" as its second priority, and FIRE's captured FLR could be deposited into eFLR rather than distributed. The effect would be to seed the pool and to give FIRE a yield-bearing FLR position. Two cautions. FIRE's assets are mixed (stablecoins, FXRP, FLR), so only the FLR leg qualifies. And a pool part-owned by the Foundation's revenue entity is a pool whose neutrality will be questioned; Section 8 addresses whether the governance envelope can carry that.
 
-The "deflationary flywheel" claim from the sparring draft is dropped. Locking FLR in a pool changes float, not supply. The fee in Section 7.6 burns a fraction of yield that is small against 3% inflation. eFLR is a supply sink in the FIP.16 sense (excluded from the inflatable base while locked) and nothing more, and the document should not say more.
+The "deflationary flywheel" claim from the sparring draft is dropped. Locking FLR in a pool changes float, not supply. The fee in Section 7.2 burns a fraction of yield that is small against 3% inflation. eFLR is a supply sink in the FIP.16 sense (excluded from the inflatable base while locked) and nothing more, and the document should not say more.
 
 ### 6.3 The delegation router
 
@@ -143,6 +161,16 @@ A_i = W · (T_i · Y_i) / Σ_j (T_j · Y_j)        capped at C_max
 
 where W is the pool's delegable stake, T is a trust weight, Y is a net-yield weight, and C_max is the per-entity cap. Surplus above any entity's cap redistributes to the next by the same weights. Delegation is per entity, summed over that entity's registered nodes, because the entity is what the registry knows and the node is what the P-chain knows; the router must reconcile both.
 
+Three terms, used consistently from here:
+
+| Term | Definition | Known to | Role in the router |
+|---|---|---|---|
+| Node | One validator with its own NodeID and stake | P-chain | Unit of delegation execution |
+| Entity | Registered identity, one to four nodes | C-chain registry | Unit of scoring (T, Y) and of the cap C_max |
+| Operator | The organisation behind one or more entities | Nobody on-chain | Target of the correlation rule (6.8) |
+
+The router scores and caps entities, executes against nodes, and applies the correlation rule at entity level: an entity that spreads four nodes across four hosts does not thereby escape a penalty it shares with another entity on any one of them.
+
 ### 6.4 Eligibility (hard filters)
 
 An entity is eligible if, over the evaluation window, it has met the FIP.05 uptime requirement (80%; the RFP proposes the router use a stricter 95%), has been rewarded by the FSP for FTSO data provision in every epoch of the window (which is what "good enough prices" means in FIP.05 terms and is already computed on-chain), holds no active chill under FIP.02, and has a self-bond meeting the P-chain minimum. There is no slashing on Flare's P-chain; "slashing history" in the sparring spec is replaced by chill history, which is the network's actual sanction record.
@@ -150,6 +178,8 @@ An entity is eligible if, over the evaluation window, it has met the FIP.05 upti
 ### 6.5 Trust weight T_i
 
 New entities enter at T = 0.5 and rise linearly to T = 1.0 over 50 reward epochs (about six months) of continuous eligibility. The purpose is to make Sybil entry expensive in time, since a 1 million FLR self-bond does not make it expensive in capital. A window of 30 epochs (about 105 days) governs penalties: each epoch of ineligibility inside the window deducts 0.2 from T, floored at 0; eligibility restores T by 0.05 per clean epoch. An entity that goes dark for one epoch loses a fifth of its weight for four epochs and is back at full weight within a month. An entity that is chilled loses eligibility for the chill's duration and re-enters at T = 0.5. No lifetime exclusions; the router is not a court.
+
+The obvious attack is identity splitting: an operator at C_max registers a second entity, waits out the ramp, and after six months collects delegation under two names. Two things bound it, and neither is the ramp. FIP.05's delegation factor caps total stake on a node at 15× its self-bond, so a fresh entity with the 1 million FLR minimum can receive at most 14 million in delegation from anyone, router included; scaling the attack means scaling self-bond, which is capital the operator has to lock. And the cap in 6.7 is computed on the entity's share of network stake, so a second entity that shares infrastructure with the first shares its cap under 6.8. A reviewer proposed tying the ramp to self-bond size directly (T rising more slowly below a 5 million FLR bond). The RFP does not adopt it: the delegation factor already prices Sybil entry in capital, and a bond-weighted ramp would slow exactly the small honest operators the baseline exists for. What the ramp buys is time, and time is the one input a well-funded attacker cannot buy.
 
 ### 6.6 Net-yield weight Y_i
 
@@ -159,7 +189,7 @@ Flare's validators are data providers, and their reward rate varies with data qu
 Y_i = (gross reward rate_i × (1 − fee_i)) / median_j(gross reward rate_j × (1 − fee_j))
 ```
 
-Fee is the entity's declared fee, floored at 20% by FIP.16. An entity charging 35% competes against one charging 20% on net yield and loses delegation to it; an entity whose FTSO submissions earn more competes on gross and wins. Y is clamped to [0.5, 1.5] so that a single hot epoch cannot move the pool, and so that the router remains a baseline, not a momentum trader.
+Fee is the entity's declared fee, floored at 20% by FIP.16. An entity charging 35% competes against one charging 20% on net yield and loses delegation to it; an entity whose FTSO submissions earn more competes on gross and wins. Y is clamped to [0.5, 1.5] and computed on a trailing ten-epoch mean, so that one exceptional epoch moves an entity's weight by at most a tenth of its excess and the router remains a baseline, not a momentum trader. Yield-hopping, where delegation chases last epoch's winner, is a failure mode of every reactive allocator, and the window and the clamp are the two instruments against it; if either proves too loose on Songbird, both are parameters.
 
 This is the part of the design that answers the objection that an enshrined pool socialises the validator set. It does the opposite. Today delegation from the largest pool follows a relationship with the pool operator, and the terms of that relationship are not public. Under the router, delegation follows three numbers every entity can see and move: uptime, data quality, and fee. An entity that improves its FTSO feeds gains delegation next epoch from a delegator that cannot be lobbied. The competition is not dampened; it is made legible and open to every entity that meets the filters, including the ones that have no business-development function at all.
 
@@ -187,7 +217,9 @@ eFLR's advantage over that is not primarily the fee. It is that the router pays 
 
 A fee on pool rewards, proposed at 5% for discussion; Sceptre charges 10%, typical LST fees run 10–20%, and the right number is whatever covers the reserve and leaves eFLR's net rate above the private pools' without a self-bond subsidy. Two destinations, and the sparring draft's 50/50 split is replaced with something the numbers can carry.
 
-The first destination is the instant-redemption reserve, until it reaches its invariant size (proposed: 5% of pool). Once the reserve is full, the fee goes entirely to the second destination: FIRE, under its existing mandate. The RFP does not propose a separate "insurance fund". Flare's P-chain does not slash, so there is no principal loss to insure against from validator conduct; the risks that remain (contract bug, enclave compromise, extended illiquidity) are not insurable out of 5% of yield, and a fund that claims to cover them is marketing. "Principal-protected" does not appear in this document.
+The first destination is the instant-redemption reserve, until it reaches its invariant size (proposed: 5% of pool). Once the reserve is full, the fee goes to the second destination, and here the RFP has to name a conflict it created. FIRE is administered by the Foundation. A fee from eFLR to FIRE is, in practice, a fee to the Foundation, and it gives the Foundation a direct financial stake in eFLR's growth. Every parameter in Section 6 that makes eFLR more attractive to depositors (a looser uptime filter, a softer Y clamp, a higher cap) raises that fee. If the same Foundation also holds the custody keys, the party that sets the router's neutrality is paid for the router's size. That is not a hypothetical; it is the structure.
+
+The fee's destination is therefore conditional. If the custody condition in Section 8 is met, and no single party including the Foundation can replace the enclave image or the upgrade key, the fee may go to FIRE under its existing mandate, because FIRE's priorities two through four are the ones an eFLR fee should fund. If the custody condition is not met, the fee is burned. Burn benefits every FLR holder equally and gives no party an interest in the pool's size. The RFP does not propose a separate "insurance fund". Flare's P-chain does not slash, so there is no principal loss to insure against from validator conduct. The arithmetic for the risks that remain is short: a 2 billion FLR pool at 7% gross yields about 140 million FLR a year, of which 5% is 7 million; an enclave compromise loses the pool. A fund that claims to cover a loss three hundred times its annual inflow is marketing, and "principal-protected" does not appear in this document. What a compromise does get is §11.11.
 
 ### 7.3 Who earns what
 
@@ -213,6 +245,10 @@ The envelope this RFP proposes has four parts, and the fourth is the one that ma
 
 **Custody outside the Foundation.** This is the part the sparring draft's dual-veto does not solve. A veto over parameters is worth little if the enclave image, the router's data feeds and the upgrade key are held by the same party. The four buckles from the author's FIRE essay apply verbatim: the upgrade key, the mandate governance, the enclave image, the input feeds. Each must have a documented holder, and for at least the enclave image and the upgrade key the holder must not be the Foundation alone. A 2-of-3 across Foundation, an elected entity committee (FIP.16's own joint-governance mechanism, Songbird-then-Flare election) and a time-delayed community key is the minimum. If the Foundation will not accept that, Scope A (router without protocol custody) is the honest fallback, and the four keys stay with the pools, bounded by the contract terms the earlier dispatch asked for.
 
+**Transition.** A 2-of-3 that does not exist at launch is a promise, and Section 3 of the author's FIRE essay already said what promises are worth. The proposal is staged so that each stage is a precondition for the next, not a hope after it. At launch, on Songbird, the Foundation holds the keys alone, under the 21-day timelock and the ragequit right; this is acceptable because Songbird is the test and the amounts are SGB. Before any Flare deployment, the entity committee exists: elected by the mechanism FIP.16 §4.5.1 already specifies (a Songbird vote to shortlist eight, a Flare vote to seat four) but without FIP.16's precondition of a 50%-of-supply vote to unlock it, which has never been met and was designed not to be. Before the pool exceeds a threshold share of active stake (proposed: 10%), the community key exists: a time-delayed multisig whose signers are elected by eFLR holders, with the power to block a parameter change or an image replacement and no power to initiate either. If the second or third stage is not in place when its trigger arrives, deposits close until it is. Closing deposits is the enforcement; there is no other.
+
+**Deadlock.** Three parties will disagree. The rule is that the status quo wins: any change to parameters or to the enclave image needs two of three, so one party can block, and a block is not a crisis, it is the design working. Where all three want a change and differ on the value, the most conservative proposal takes effect (the lowest cap, the strictest filter, the longest timelock), and the others may propose again after one reward epoch. Where the disagreement is about an emergency (a live exploit, an image with a known bug), the only emergency action available to any single party is to pause new deposits and new delegation instructions; existing delegations mature on schedule and the exit queue keeps running. Nobody can move capital alone, in an emergency or otherwise. That is the whole point of the envelope, and an emergency power that could override it would be the four keys again.
+
 ---
 
 ## 9. Composability
@@ -222,6 +258,8 @@ eFLR is a base asset. Everything below it in the stack (fixed-term lending, opti
 The sparring draft proposed native PT/YT splitting in the protocol. This RFP recommends against it. Spectra already runs yield tokenisation on Flare against sFLR, with live pools across maturities, and the Fixed-Term Lending RFP already specifies PT-as-collateral on Spectra's rails. An enshrined splitter duplicates a live product, adds contract surface to the core, and forces the protocol to maintain a maturity calendar. What the protocol should do instead is make eFLR trivially strippable: value-accruing accounting, a clean exchange-rate oracle, no transfer hooks, no rebasing. Spectra then lists eFLR as it listed sFLR, and PT-eFLR becomes the collateral the lending RFP wants: a claim on protocol-custodied FLR with no operator key risk, which is the property that makes it institutional-grade rather than merely fixed-rate.
 
 The author's conflict is on the table here: the recommendation favours a protocol the author uses and a market the author wants to exist. The counter-argument, that enshrined stripping removes a dependency on a third party, is real, and Section 10 keeps it open.
+
+**FAssets.** The largest consumer of FLR collateral on the network is not a lending market; it is the FAssets system, where FLR sits in agents' collateral pools behind FXRP. eFLR in that role would replace an asset with operator key risk (sFLR) with one without it, which is an argument FAssets governance should hear, and it comes with a liquidity condition: an FAssets liquidation that receives eFLR has to be able to turn it into FLR faster than the exit queue allows. Two ways to meet that. A haircut on eFLR's collateral value sized to the secondary-market discount observed on Songbird under stress, which is the honest way and needs no new mechanism. Or a liquidation lane in the reserve, ahead of ordinary redemptions and behind ragequit, capped at a share of the reserve the invariant can spare. The RFP proposes the first and leaves the second to the FAssets team, and it does not propose collateral factors; those are FAssets governance's to set against data that does not yet exist.
 
 ---
 
@@ -235,14 +273,16 @@ Ordered by how much the answer changes the design.
 4. **What threshold triggers mandatory routing under Scope A?** Cosmos chose 25% of all stake for the aggregate of liquid providers. Flare's largest pool is at 11%. A per-pool threshold of 5% of active stake is the number consistent with the entity cap; the RFP asks whether it should be lower.
 5. **Should FIRE seed the pool?** Section 6.2 puts the option forward and names the neutrality cost. The answer depends on Section 8's custody outcome.
 6. **Native stripping or Spectra rails?** Section 9 recommends rails. The dependency argument against it deserves a written answer from the Foundation, not from this author.
-7. **What happens to sFLR?** A migration path is needed: a one-way sFLR→eFLR conversion at the exchange rate at snapshot, an incentive to use it, or nothing. Nothing is a legitimate answer under Scope C, where sFLR becomes a front-end over the router and its holders lose no yield.
+7. **What happens to sFLR?** Three paths, and the RFP should be plain about which ones work. A soft path (eFLR launches, sFLR stays, a conversion at the snapshot exchange rate with a small bonus for early movers) is politically costless and, on the Cosmos and Ethereum evidence, does not move capital; holders stay where their integrations are. A hard path (Scope C: sFLR must delegate through the router above the threshold) removes the concentration and leaves Sceptre its 10% service fee, its front-end and its integrations, which is why it is the path a rational Sceptre should prefer to a percentage cap it has to route around. A third path, freezing or force-converting the sFLR contract, is excluded here and should be excluded in writing by the Foundation: it would establish that a protocol can seize a private contract's deposits by vote, and that precedent is worth more to an attacker than any pool. The honest statement is that without the hard path eFLR does not reach critical mass, and the decision between soft and hard is the Foundation's political decision, not a technical one.
 8. **Songbird first?** Every consensus-touching FIP has shipped on Songbird first. The router (Scope A) can run on Songbird against SGB staking within a quarter of a decision; the token (Scope B) should not ship on Flare before it has run through at least two Songbird reward-epoch cycles with the exit queue under load.
+9. **What does it cost?** Engineering effort for the P-chain primitive, FCC provisioning for the enclave route, audit scope for the immutable core, and the reserve's opportunity cost. This RFP has no basis for those numbers and does not invent them. The decision matrix in 4.1 is incomplete without them, and the request is that the core team fill that column before the scope decision, not after.
+10. **Will FAssets governance accept eFLR as pool collateral, and on what haircut?** Section 9 argues it should; the number depends on Songbird stress data that does not exist yet.
 
 ---
 
 ## 11. Failure Modes
 
-Hardest first.
+Hardest first. Before the list, who measures: every test below carries a date and a threshold, and a Foundation that measures its own project will find it succeeding. The proposal is that the metrics (pool share of active stake, share of pooled stake routed, entity count receiving router delegation, exit-queue depth, secondary-market discount) are published as time series by a party that does not hold keys, on the pattern Flare Metrics and Catenalytica already follow, quarterly, on the forum. Three consecutive missed quarterly thresholds open a review in which the three custody parties of Section 8 must, within one reward-epoch cycle, choose one of: adjust parameters, change scope, or wind down. Under Scope C "routed" means delegation that passed through the router from any pool, sFLR included; eFLR's own share is a separate metric and a weaker one.
 
 **11.1 The enshrined pool is the largest pool.** If eFLR works it becomes 30–50% of active stake, and the largest delegator on the network is a contract whose parameters are set by governance and whose keys are held by whoever holds them. Every objection to Sceptre's 11% applies at three times the size. The design's defence is that the router cannot concentrate (6.7) and the keys cannot be used discretionarily (8). Both defences are exactly as strong as their implementation and no stronger. If the four buckles are not closed, this RFP has proposed a bigger Sceptre with a Foundation logo. Test: before mainnet, an independent review of the enclave image and key holders, published; if any single party can replace the image, do not ship Scope B.
 
@@ -260,6 +300,12 @@ Hardest first.
 
 **11.8 Ethereum was right.** The strongest external argument is that enshrinement was rejected on the network with the most research behind it, and that the rejection was on principle: a protocol that selects validators has taken a political role. Flare's answer is that it took that role in FIP.16 already and that its validator set is small enough to make an algorithmic router auditable. If the Foundation does not accept the first half of that answer, this RFP has no ground to stand on, and the right document is a FIP.02 amendment, not this one.
 
+**11.9 The router's inputs are wrong.** The router allocates on FSP reward data and uptime. If the FTSO layer is compromised, the router delegates toward whoever is gaming it, at scale, every epoch. Two limits on that. A compromised FTSO is a compromised network; the router is not the largest thing that breaks, and a document that solved it here would be overclaiming. And the router can be made to fail closed: if any entity's inputs move more than a bound in one epoch, or the network median moves more than a bound, the router issues no new instructions that epoch and existing delegations mature on schedule. A router that pauses is a delegator that stops, which is what Sceptre's four keys could not be made to do. Cross-checking against a second data source is desirable and, for host attribution, not yet oracle-grade (Open Question 2); the fail-closed rule does not depend on it.
+
+**11.10 Regulators read "protocol-issued yield-bearing token" and see a fund.** eFLR is a claim on a pool managed by a published algorithm with a fee. Under MiCA and under most securities analyses that description is close enough to a collective investment scheme to require an answer, and the answer "there is no issuer" is weaker for a Foundation-deployed contract than for a private one. Scope A carries none of this; it issues nothing. The RFP's position is that a written legal analysis for the EU, UK and US precedes any Scope B deployment on Flare, and that its absence is a reason to ship A alone, not a reason to ship B and hope.
+
+**11.11 The enclave is broken.** Under §5.2 (i) the keys live in an FCC image. If the image is compromised and the keys extracted, the P-chain delegations can be redirected as they mature and the reserve can be drained. There is no fund that covers this (§7.2), the loss falls on eFLR holders, and recovery is a hard fork or nothing. This is the argument for the primitive over the enclave, stated as a failure mode so that it is not lost: a route whose failure is total is a bridge, not a destination. Under (ii) the equivalent failure is a consensus bug in the primitive, which is why B waits for two Songbird cycles.
+
 ---
 
 ## 12. What Ships First
@@ -267,6 +313,18 @@ Hardest first.
 A percentage cap per entity in FIP.02/FIP.05, which needs no part of this document. Then Scope A on Songbird: the router, mandatory above a per-pool threshold, without protocol custody. Then, on the Stage 3 consensus change, Scope B with custody under the envelope in Section 8, or an explicit decision not to. The order matters because A bounds the pool that exists today and B does not exist until the settlement gap is closed.
 
 The one thing this RFP asks the network not to do is to treat the Sceptre case as closed when the second identity is deregistered on 16 September. The identity was never the problem. The 2.4 billion is still there, still uncapped, and the next pool to reach the ceiling will do the arithmetic Sceptre did.
+
+---
+
+## Appendix A — Minimum Specification for the Settlement Bridge
+
+Written from outside the codebase, as the questions a core reviewer would have to answer for each route. Where a mechanism is named, it is the Avalanche-derived mechanism Flare's `go-flare` inherits; where it is not, the RFP does not know.
+
+**A.1 P-chain primitive (§5.2 ii).** A new P-chain transaction type, or an extension of `AddPermissionlessDelegatorTx`, whose reward owner and change owner are a C-chain contract address rather than a P-chain key, and which the P-chain accepts only when accompanied by a proof that the named contract emitted a matching intent (entity, nodes, amount, duration) in a finalised C-chain block. The proof can follow the pattern `PChainStakeMirror` already uses in the other direction. Intents are emitted only at reward-epoch boundaries, batched per epoch by the router, so the transaction count is bounded by the entity count, not by depositor activity; a contract cannot flood the P-chain because the contract only speaks once per epoch. C-chain reorgs are not a concern past finality, and the P-chain acts only on finalised intents. At maturity the P-chain returns principal and rewards to the contract's atomic-memory address, and the router imports it in the next epoch. What the core team would need to state: whether the atomic export/import path can be driven without a P-chain signer at all, whether the mirror's verifier set is the right trust base for the reverse proof, and what the Stage 3 consensus changes do to any of this.
+
+**A.2 FCC enclave (§5.2 i).** A TEE image that holds one P-chain key pair, generated inside the enclave, with remote attestation of the image hash published on-chain and checked by the eFLR contract before any instruction is honoured. The image executes one policy: read the router's target allocation from a finalised C-chain block, construct the export, delegate and import transactions that move toward it, and sign nothing else. The RFP would need the Foundation to state which TEE (the FCC roadmap will decide this, and the answer determines the side-channel history the design inherits), who can publish a new image hash and under what delay, and what happens to in-flight delegations when an image is retired: the honest answer is that they mature under the old key and the new image must be able to import them, which means the key has to be transferable between images or the retirement has to wait a full lock ladder. That constraint alone is an argument for A.1.
+
+**A.3 Either route.** The router's target allocation is the only input the bridge accepts, the bridge's only outputs are delegations and imports, and both are visible on-chain every epoch. Anyone can recompute the allocation from public inputs and compare. A bridge whose behaviour cannot be recomputed by an outsider is a key, whatever it is called.
 
 ---
 

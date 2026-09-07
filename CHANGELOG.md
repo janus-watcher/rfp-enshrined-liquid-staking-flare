@@ -2,6 +2,25 @@
 
 All notable changes to this RFP. Versioned snapshots live in [`drafts/`](../drafts/); the push-ready set lives in [`github_upload/`](.).
 
+## Draft 2 — 2026-09-07
+
+Response to a structured gap review (ten points) plus post-publication edits. Adopted, adapted, or declined as follows.
+
+- **§4.1 Decision matrix** added: seven criteria across Scopes A/B/C, two dated decision conditions (Q1 2027 primitive spec; Q3 2027 Coston2), cost column explicitly requested from the core team.
+- **§5.2 position taken:** the P-chain primitive is the target, the FCC enclave a bridge with a sunset. **Appendix A** added: minimum specification for both routes (transaction type, proof pattern, epoch-bounded intents, image retirement constraint).
+- **§6.3 terminology table** (node / entity / operator) and rule that the correlation penalty applies at entity level.
+- **§6.5 identity-splitting attack** analysed. Reviewer's bond-weighted ramp *declined*: FIP.05's 15× delegation factor already prices Sybil entry in capital, and a bond-weighted ramp would slow the small honest operators the baseline exists for.
+- **§6.6** yield-hopping: trailing window and clamp named as the instruments; both parameters.
+- **§7.2 FIRE conflict** named: a fee to FIRE is a fee to the Foundation and gives it a stake in the pool's size. Fee destination now conditional on the custody condition in §8; burn otherwise. Enclave-loss arithmetic added (7M FLR/yr fee vs. pool-sized loss).
+- **§8 transition and deadlock:** three staged custody stages with deposit-closing as enforcement; status-quo-wins rule; most-conservative-value rule; single-party emergency power limited to pausing deposits and new instructions. Reviewer's claim that FIP.16's committee is Foundation-appointed corrected: FIP.16 §4.5.1 specifies an election, gated behind a 50%-of-supply vote; the RFP reuses the election without the gate.
+- **§9 FAssets** subsection: eFLR as agent collateral-pool asset, liquidity condition, haircut over liquidation lane. Reviewer's collateral factors (80/70) not adopted; no data.
+- **§10.7 migration** rewritten: soft path does not move capital, hard path (Scope C) is what a rational Sceptre should prefer, force-conversion excluded in writing. **10.9** cost request, **10.10** FAssets acceptance added.
+- **§11 monitoring protocol** (independent measurement, quarterly time series, three-miss review) and failure modes **11.9** inputs wrong / fail-closed, **11.10** regulatory, **11.11** enclave compromise.
+- Post-publication edits folded in: companion line removed; proxy-with-kickbacks qualifier (§1, §2.3); fee marked as proposal (§7.2, README); disclosure corrected (occasional Spectra contact, duration interest); validator competition paragraph (§1, §6.6); §6.2 cross-reference fixed (7.6→7.2).
+- Word count ~6,300 → ~9,200.
+
+Commit: `Draft 2: decision matrix, settlement appendix, FIRE fee conflict, custody transition, FAssets, three failure modes`
+
 ## Draft 1 — 2026-09-06
 
 First full draft, built from the FIP.17 sparring transcript and the "Ceiling on Owning" dispatch, fact-checked against FIP.05 / FIP.16 / Kiln P-chain docs.
