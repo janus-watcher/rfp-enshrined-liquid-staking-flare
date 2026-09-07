@@ -3,8 +3,7 @@
 A request for proposal for a **protocol-owned liquid staking layer** on Flare: an algorithmic delegation router with per-entity caps the chain enforces, optionally a protocol-issued token (eFLR) under protocol custody, and the governance envelope that would have to bound it. Written against the September 2026 Sceptre case and the FIP.16 precedent of internalising an extraction the network could not police.
 
 **Author:** Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)<br>
-**Status:** Draft 1 — open for community review · see [CHANGELOG](CHANGELOG.md)<br>
-**Companions:** [RFP — Native Options on Flare](https://github.com/janus-watcher/rfp-options-flare-native) (prices volatility) · RFP — Fixed-Term Lending on Flare (prices time and credit) · this one bounds the base asset both sit on
+**Status:** Draft 1 — open for community review · see [CHANGELOG](CHANGELOG.md)
 
 ---
 

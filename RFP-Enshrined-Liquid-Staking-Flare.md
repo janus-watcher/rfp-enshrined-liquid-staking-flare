@@ -6,7 +6,6 @@ Author: Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)
 Status: Draft 1 — open for community review  
 Date: September 2026  
 Requires (reading): FIP.02, FIP.05, FIP.10, FIP.16  
-Companions: [RFP — Native Options on Flare](https://github.com/janus-watcher/rfp-options-flare-native) (prices volatility) · RFP — Fixed-Term Lending on Flare (prices time and credit) · this one bounds the base asset both of them sit on.  
 
 *Disclosure: the author holds FLR and sFLR, runs LP positions on Spectra with sFLR as underlying, and has an ongoing working relationship with Spectra. Sections 6 and 9 cut against that book. Weigh accordingly.*
 
