@@ -3,8 +3,8 @@
 **A design document for a protocol-owned liquid staking layer: what it would have to contain, which decisions it forces, and what would kill it.**
 
 Author: Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)  
-Status: Draft 3 — open for community review  
-Date: 7 September 2026 (Draft 1: 6 Sep; Draft 2: 7 Sep)  
+Status: Draft 4 — open for community review  
+Date: 7 September 2026 (Draft 1: 6 Sep; Drafts 2–3: 7 Sep)  
 Requires (reading): FIP.02, FIP.05, FIP.10, FIP.16  
 
 *Disclosure: the author holds FLR and sFLR, runs LP positions on Spectra with sFLR as underlying, has had occasional contact with the Spectra team, and has an interest in duration markets on Flare existing. Section 6 cuts against the sFLR position; Section 9 runs with the duration interest. Weigh accordingly.*
@@ -42,6 +42,8 @@ The one percentage that does exist, the 5% vote-power cap per validator above wh
 FIP.16 (April 2026) did four things that matter here. It cut inflation from 5% to 3%. It set a mandatory minimum 20% entity fee on everything staked or delegated to an entity. It raised the weight of P-chain stake to 5× C-chain delegation in the signing weight that governs FTSO, FDC and block-latency rewards, which pushes capital from liquid WFLR delegation into locked P-chain stake. And it created FIRE, the Flare Income Reinvestment Entity, with a mandate to capture fees and MEV and a roadmap that moves block building to a FIRE-designated builder in three stages.
 
 Put together: the network made third-party delegation more expensive (20% floor), made P-chain staking more rewarding (5× weight), and left the enforcement of the entity limit to a registry that counts addresses. A liquid staking pool above 1.2 billion FLR now pays 20% on everything above the ceiling unless it finds a way around the ceiling. Sceptre found one. On the author's estimate the avoided fee was on the order of 30 million FLR a year, more than the pool's entire service-fee revenue.
+
+One objection to this document, from operators who build on Flare, is that Sceptre was not a product failure but a failure of the people holding the keys, and that no formula fixes a person. The first half is true and the second half is beside the point. Whether an operator is careful or careless decides how ugly the incident looks, not whether it happens. A fully funded operator at 11% of stake would not have needed pool money for self-bonds; it would have built the same seven boxes with its own capital and registered the same second identity, because a 20% floor over a box ceiling produces that route for anyone above the ceiling, and the arithmetic does not ask who is doing it. The incident would have been cleaner. The concentration would have been the same. This document is about the parameters that make the route rational, not about the people who took it.
 
 ### 2.3 The proxy inevitability
 
@@ -85,6 +87,10 @@ Three networks have faced this and answered differently. The answers are the des
 
 **Ethereum: the road not taken (2023–2025).** Enshrined LSTs were argued in earnest by Ethereum Foundation researchers, first as a two-tier staking model, then as rainbow staking (heavy and light services, protocol-enforced self-limits for pools). None has shipped. The objections are the ones this document must answer: a protocol that selects validators has moved the political question into protocol parameters; a protocol token competes with private ones but does not remove them; and enshrinement adds consensus-level surface for a problem that might be solved by capping issuance. Lesson: enshrinement is a minority path, and its advocates lost the argument on the largest network. Flare's case has to be made on Flare's specifics, not on Ethereum's.
 
+**Flare: the market's own answer (2026).** Two Flare operators, Steven Hudspeth and Jon, have built the two halves of this document's problem without the Foundation, and the RFP would be dishonest not to put them in the precedent list. A bond NFT: capital picks its operator in public, on an immutable contract with no upgrade key and a multisig on the funds, and what it funds is self-bond, the capacity the router in Section 6 can only wait for. And an LST kit: an immutable token, modules behind a timelock, a single emergency power that is a pause and expires, keys bounded so that a theft is a leak rather than a drain, one instance per provider with its own keys, and operators auditing each other's contracts before deployment. Contract addresses and terms are to be added when the authors supply them.
+
+On custody the kit is the answer Section 5 asks for, and the "Ceiling" dispatch asked Sceptre for, and it exists today. On selection and on concentration it is not an answer, for two reasons this document has already used against itself. Liquid staking tokens win on liquidity and integrations, not on key design (11.4); Kinetic will not list twenty tokens and Spectra will not build twenty curves, so twenty kit instances either stay small and unintegrated while capital stays where the integrations are, or one of them consolidates and becomes sFLR with a better custody model and the same selection problem. And a bond NFT is capital choosing its operator in public, which is transparent and is the mechanism that built Lido; visibility changes who can see the choice, not who makes it. Lesson: the market on Flare has bounded custody. Whether it bounds concentration is what Scope A exists to test, and only above the threshold where the market has already produced the thing FIP.05 was written against.
+
 The specifics are favourable in two ways. Flare's validator set is small (179 active), and its validators are already FTSO data providers whose performance the protocol measures every reward epoch on-chain. The information an algorithmic router needs is already being computed. And Flare has already crossed the line Ethereum would not: FIP.16 designated a builder. A network that has enshrined block building has fewer principled objections left to enshrining delegation.
 
 ---
@@ -94,6 +100,8 @@ The specifics are favourable in two ways. Flare's validator set is small (179 ac
 The sparring that produced this document started from "the protocol issues eFLR". That is one of three scopes, and the cheapest one is not it.
 
 **Scope A — Enshrined router, private tokens.** The protocol publishes a delegation allocation every reward epoch: a target set of entities and weights computed from the formula in Section 6, with per-entity caps and capacity. Private LSTs continue to exist, issue their own tokens and hold their own keys. Above a threshold share of network stake, a pool's delegation is reward-eligible only if its observed allocation is within a tolerance ε of the published target. That is the enforcement point, and it has to be named, because a router that pools "must use" is a forum mandate unless one of three edges exists: the P-chain accepts delegation only from allow-listed originators, the reward script pays pool delegation only when it matches the router, or the entity registry binds pool contracts. The second is the only one available without a consensus change and without custody, and it is what "Scope A" means from here: a reward filter, not an appeal. A pool may still export, self-bond and side-deal; it then forfeits staking and FSP rewards on the non-conforming portion, which is the one lever the network already holds over every delegator on it.
+
+Below the threshold, Scope A touches nothing. Kits, bond NFTs, direct stakers, small pools, and every private LST under the line operate as they do today, with their own keys and their own selection. The router is not a plan for the network's stake; it is a rule for the layer at which the market has already produced one pool choosing a ninth of the validator set, and it is silent everywhere else. If twenty kit instances stay small, they never meet it. If one of them reaches the line, the same rule applies to it as to sFLR, and a rule that applied only to the pool that exists today would be a sanction, not a design.
 
 The threshold is a political fact before it is a number. Sceptre is above any threshold this RFP would propose. Either the document says the largest pool is bound on day one, or the threshold is a schedule. The proposal is a schedule with a sunset: 11% at activation (binding nobody), stepping to 8% and then 5% at 25-epoch intervals, about three months each, so that the pool that exists today has two quarters to bring its allocation inside the target before its rewards depend on it. A schedule is a concession; it is also the difference between a rule Sceptre can comply with and one it has to fight.
 
@@ -260,6 +268,8 @@ The depositor earns the base rate net of 20% entity fees and 5% protocol fee, ho
 ### 7.4 What this does to the 20% floor
 
 FIP.16's floor exists to make independent entities viable. A router that delegates by net yield puts every entity at the floor, because any fee above it loses delegation. That is the intended outcome and it should be said plainly: the router makes the floor the ceiling. If governance wants a market in entity fees above 20%, the Y weighting has to be softened. The RFP's position is that it should not be.
+
+The second thing the router does to entities is the objection operators raise hardest, and the RFP would rather defend it than soften it. Above the threshold, the router buys compliant boxes: it allocates on uptime, data quality and fee, and it pays nothing for marketing, for raising bonds in public, for teaching, for shipping at one in the morning. An operator whose stake depends on how well it courts stakers finds that work worth nothing to the router. That is the design. FIP.16 §1.1 says where infrastructure income is supposed to come from: the economic incentives for providers "will transition from FLR inflation to organic yield driven by on-chain activity", meaning FDC request fees, FCC fees, and feeds that have customers. An entity competing for stakers is competing for the wrong capital. On a network with 179 validators and 21 billion FLR staked, marketing to stakers is a distribution fight over one pool of stake; it moves delegation between entities and adds nothing the network did not already have. The router makes that fight worthless above the line and leaves feed quality and feed customers as the axis that remains. It does not pay the ecosystem to stop building. It stops paying for the one kind of building FIP.16 has already said it will stop paying for, and leaves the operators' capital, attention and hours for the kind it said it would.
 
 ---
 
@@ -432,6 +442,10 @@ Readings. A 5% reserve absorbs a 5% one-day run and nothing larger. A 90-day lad
 | Identity splitting | Second entity, second cap | 15× delegation factor; T ramp from 0.1; one-fifth cap for 50 epochs (6.5) |
 | Validator cartel on separate infrastructure | Aggregate share across friendly entities | Not bound here; identity-staking follow-up (11.3) |
 | Foundation as sole key holder | Everything | Custody matrix (8); if unmet, Scope A only |
+
+## Reviews
+
+Draft 2 responded to a structured written review; Draft 3 to a second that found the Stage 3 gap and the missing enforcement point. Draft 4 responds to Steven Hudspeth (@hudspeth589) and Jon, operators on Flare who have built the LST kit and bond NFT described in Section 3, and whose objection that the router pays for compliant boxes is answered in 7.4 by agreeing with it. Their interest is disclosed as the author's is: they build a competitor to sFLR and, above the threshold, to this proposal.
 
 ## 13. Sources
 

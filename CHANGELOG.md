@@ -2,6 +2,18 @@
 
 All notable changes to this RFP. Versioned snapshots live in [`drafts/`](../drafts/); the push-ready set lives in [`github_upload/`](.).
 
+## Draft 4 — 2026-09-07
+
+Response to operator feedback (Steven Hudspeth, @hudspeth589, with Jon) received via X chat. Four changes, none of them a concession.
+
+- **§2.2 people vs parameters.** "It was the people, not the product" answered: a fully funded operator at 11% builds the same seven boxes with its own capital and registers the same second identity; the people decide how the incident looks, the parameters decide whether it happens.
+- **§3 new precedent: Flare's own market answer.** The LST kit (immutable token, timelocked modules, expiring pause, bounded keys, one instance per provider, mutual audits) credited as the custody answer §5 asks for. Declined as a selection or concentration answer: twenty instances are illiquidity with better keys (11.4's own argument); the bond NFT is capital choosing its operator in public, Lido's mechanism made visible. Addresses/terms pending from the authors.
+- **§4 market free below the threshold** stated as its own paragraph: kits, bond NFTs, direct stakers, small pools untouched; the rule applies to any pool that reaches the line, sFLR or a kit instance.
+- **§7.4 router buys compliant boxes, on purpose.** FIP.16 §1.1 ("transition from FLR inflation to organic yield driven by on-chain activity") as the anchor: staker marketing on a 179-validator network is a distribution fight; the router makes it worthless above the line and leaves feed quality and feed customers as the axis. A 20%-operator's-book concession considered and rejected.
+- **Reviews** section added before Sources, with reviewers' interest disclosed alongside the author's.
+
+Commit: `Draft 4: operator feedback — people vs parameters, market answer as precedent, market free below threshold, router buys boxes on purpose`
+
 ## Draft 3 — 2026-09-07
 
 Response to a second review that found the strategic gap: the FIP.16 analogy carried less than Draft 1–2 claimed, and Scope A had no enforcement point.
