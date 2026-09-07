@@ -183,7 +183,7 @@ eFLR's advantage over that is not primarily the fee. It is that the router pays 
 
 ### 7.2 Protocol fee
 
-A 5% fee on pool rewards, versus Sceptre's 10% and typical LST fees of 10–20%. Two destinations, and the sparring draft's 50/50 split is replaced with something the numbers can carry.
+A fee on pool rewards, proposed at 5% for discussion; Sceptre charges 10%, typical LST fees run 10–20%, and the right number is whatever covers the reserve and leaves eFLR's net rate above the private pools' without a self-bond subsidy. Two destinations, and the sparring draft's 50/50 split is replaced with something the numbers can carry.
 
 The first destination is the instant-redemption reserve, until it reaches its invariant size (proposed: 5% of pool). Once the reserve is full, the fee goes entirely to the second destination: FIRE, under its existing mandate. The RFP does not propose a separate "insurance fund". Flare's P-chain does not slash, so there is no principal loss to insure against from validator conduct; the risks that remain (contract bug, enclave compromise, extended illiquidity) are not insurable out of 5% of yield, and a fund that claims to cover them is marketing. "Principal-protected" does not appear in this document.
 
