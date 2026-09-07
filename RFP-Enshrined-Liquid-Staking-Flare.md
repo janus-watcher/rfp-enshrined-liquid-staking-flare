@@ -7,7 +7,7 @@ Status: Draft 1 — open for community review
 Date: September 2026  
 Requires (reading): FIP.02, FIP.05, FIP.10, FIP.16  
 
-*Disclosure: the author holds FLR and sFLR, runs LP positions on Spectra with sFLR as underlying, and has an ongoing working relationship with Spectra. Sections 6 and 9 cut against that book. Weigh accordingly.*
+*Disclosure: the author holds FLR and sFLR, runs LP positions on Spectra with sFLR as underlying, has a small working relationship with Spectra, and has an interest in duration markets on Flare existing. Section 6 cuts against the sFLR position; Section 9 runs with the duration interest. Weigh accordingly.*
 
 *"FIP.17" is used below as a placeholder. The next FIP number is the Foundation's to assign. "eFLR" (enshrined FLR) is likewise a working name.*
 
@@ -219,7 +219,7 @@ eFLR is a base asset. Everything below it in the stack (fixed-term lending, opti
 
 The sparring draft proposed native PT/YT splitting in the protocol. This RFP recommends against it. Spectra already runs yield tokenisation on Flare against sFLR, with live pools across maturities, and the Fixed-Term Lending RFP already specifies PT-as-collateral on Spectra's rails. An enshrined splitter duplicates a live product, adds contract surface to the core, and forces the protocol to maintain a maturity calendar. What the protocol should do instead is make eFLR trivially strippable: value-accruing accounting, a clean exchange-rate oracle, no transfer hooks, no rebasing. Spectra then lists eFLR as it listed sFLR, and PT-eFLR becomes the collateral the lending RFP wants: a claim on protocol-custodied FLR with no operator key risk, which is the property that makes it institutional-grade rather than merely fixed-rate.
 
-The author's conflict is on the table here: the recommendation favours a protocol the author works with. The counter-argument, that enshrined stripping removes a dependency on a third party, is real, and Section 10 keeps it open.
+The author's conflict is on the table here: the recommendation favours a protocol the author works with and a market the author wants to exist. The counter-argument, that enshrined stripping removes a dependency on a third party, is real, and Section 10 keeps it open.
 
 ---
 
