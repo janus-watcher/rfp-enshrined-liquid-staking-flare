@@ -2,6 +2,26 @@
 
 All notable changes to this RFP. Versioned snapshots live in [`drafts/`](../drafts/); the push-ready set lives in [`github_upload/`](.).
 
+## Draft 3 — 2026-09-07
+
+Response to a second review that found the strategic gap: the FIP.16 analogy carried less than Draft 1–2 claimed, and Scope A had no enforcement point.
+
+- **Recommendation changed and the change made visible (§4, §12).** A is the product, in four independent deliverables; B only behind a delegation FIP or a reviewed FCC key set with the custody matrix filled in, otherwise explicitly not.
+- **Stage 3 decoupled (§2.4, §5.2, OQ 1).** Stage 3 changes builder/proposer, not contract-originated delegation; the primitive is its own FIP. Analogy box: what is parallel (selection), what is not (settlement).
+- **Scope A enforcement point named (§4):** reward-eligibility rule with tolerance ε against the published allocation; three possible edges listed, only the reward script is available without consensus change or custody. **Threshold schedule** 11% → 8% → 5% at 25-epoch steps.
+- **Do-nothing baseline (§2.5)** quantified: ~15–19M FLR/yr in third-party fees on the excess, side-deal value ~9M.
+- **Router (§6.3):** capacity term K_i (15× factor, 300M node cap); rebalance budget from maturities only; step limit; published tracking error. **T starts at 0.1** with one-fifth cap for 50 epochs (was 0.5). **Y endogeneity** named; rate-per-stake and cap as partial mitigations. **Correlation moved to advisory** (§6.8), out of C_max, until oracle-grade.
+- **Mirror limit (§5.2):** three validators per P-chain address → vault architecture; Appendix A.2 corrected.
+- **§6.9 Two yields:** P-chain/WFLR split as parameter, same entity weights for FTSO leg, contract claims and compounds; FTSO-selector power stated as hard as 11.1.
+- **Liquidity (§5.3):** discount policy (no admin, no FIRE), griefing model, **Appendix C** stress table (5/10/20% over 1/30 days × 90/180/365-day ladders, 5% reserve).
+- **Economics (§7):** net-to-depositor arithmetic 0.76g vs 0.78g; FIRE may not seed while receiving the fee; 5% not cemented pending Appendix C on Songbird data. Success metric for A/C moved to §1.
+- **Governance (§8): custody matrix** (asset, signer, delay, key loss); committee = FIP.16 §4.5.1 seats without the 50% gate, veto only because the router pays them; community key 7-of-12, annual election, public ceremony, 14-day delay; FCC image reproducible build, CVE → pause not patch; wind-down as ladder run-off.
+- **OQ 9 pool definition** (same privileged roles = same pool). **11.3** identity-staking announced as follow-up. **11.11** brand risk. **Appendix B** numbers with dates (Bifrost as live proof). **Appendix D** Songbird test plan. **Appendix E** threat model.
+- §1 shortened by a third.
+- Word count ~9,200 → ~13,000.
+
+Commit: `Draft 3: A as product, reward-filter enforcement, Stage 3 decoupled, capacity-aware router, custody matrix, appendices B–E`
+
 ## Draft 2 — 2026-09-07
 
 Response to a structured gap review (ten points) plus post-publication edits. Adopted, adapted, or declined as follows.
