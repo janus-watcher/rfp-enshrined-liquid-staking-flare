@@ -13,7 +13,7 @@ Second round of operator feedback (S. Hudspeth). Title changed.
 - **§7.4 documented vs inferred:** FIP.16 §1.1/§4.1/§4.3/§4.4.1/§5.2 quoted; "stakers are the wrong capital" marked as the author's inference. **Appendix F** table of quotations vs inferences.
 - **§7.4 moat objection** answered: brand raises the bond, performance fills the 15× multiple; the operator starting tonight is an entity below every line, and the router is the delegation he cannot get today without a relationship. Bond NFT and router complementary.
 - **Appendix B:** sFLR share supply 1.196963bn (explorer, author-verified 8 Sep); peak 1.339bn 3 Jun, −10.6%, September −58.5M (reviewer's series, not re-run); implied exchange rate ~1.8–2.0 reconciling shares with the 2.384bn FLR pool figure; note on Sceptre's FLR-denominated "Total sFLR" chart; decline predates the breach.
-- Reviews section updated.
+- Reviews section updated. **Steven Hudspeth added as contributor** in the header and README.
 
 Commit: `Draft 5: title, definitions, Scope 0 disclosure, shared-ABI correction, FIP.16 said vs inferred, moat answer, sFLR supply series`
 

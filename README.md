@@ -5,6 +5,7 @@
 A request for proposal for a **protocol-published delegation rule** on Flare above a concentration threshold, enforced as a reward-eligibility filter, with machine-readable disclosure first; and for the protocol-owned liquid staking token (eFLR) that could sit behind it only if custody can be shown in a key matrix. Written against the September 2026 Sceptre case and the FIP.16 precedent of internalising an extraction the network could not police.
 
 **Author:** Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)<br>
+**Contributor:** Steven Hudspeth · [@hudspeth589](https://x.com/hudspeth589) (Drafts 4–5: disclosure-first, moat objection, shared-ABI correction, sFLR supply data)<br>
 **Status:** Draft 5 (8 Sep 2026) — open for community review · see [CHANGELOG](CHANGELOG.md)
 
 ---

@@ -5,6 +5,7 @@
 **A design document for a protocol-published delegation rule above a concentration threshold, and for the protocol-owned liquid staking token that could sit behind it: what each would have to contain, which decisions they force, and what would kill them.**
 
 Author: Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)  
+Contributor: Steven Hudspeth · [@hudspeth589](https://x.com/hudspeth589) — Scope 0 (machine-readable disclosure), the moat objection, the shared-ABI correction, the sFLR supply series; see Reviews  
 Status: Draft 5 — open for community review  
 Date: 8 September 2026 (Draft 1: 6 Sep; Drafts 2–4: 7 Sep)  
 Requires (reading): FIP.02, FIP.05, FIP.10, FIP.16  
