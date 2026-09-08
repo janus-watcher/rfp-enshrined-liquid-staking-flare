@@ -1,15 +1,35 @@
-# RFP — Enshrined Liquid Staking on Flare (eFLR)
+# RFP — Enshrined Delegation on Flare
 
-**A design document for a protocol-owned liquid staking layer: what it would have to contain, which decisions it forces, and what would kill it.**
+## A router first; eFLR only if custody can be shown
+
+**A design document for a protocol-published delegation rule above a concentration threshold, and for the protocol-owned liquid staking token that could sit behind it: what each would have to contain, which decisions they force, and what would kill them.**
 
 Author: Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)  
-Status: Draft 4 — open for community review  
-Date: 7 September 2026 (Draft 1: 6 Sep; Drafts 2–3: 7 Sep)  
+Status: Draft 5 — open for community review  
+Date: 8 September 2026 (Draft 1: 6 Sep; Drafts 2–4: 7 Sep)  
 Requires (reading): FIP.02, FIP.05, FIP.10, FIP.16  
 
 *Disclosure: the author holds FLR and sFLR, runs LP positions on Spectra with sFLR as underlying, has had occasional contact with the Spectra team, and has an interest in duration markets on Flare existing. Section 6 cuts against the sFLR position; Section 9 runs with the duration interest. Weigh accordingly.*
 
 *"FIP.17" is used below as a placeholder. The next FIP number is the Foundation's to assign. "eFLR" (enshrined FLR) is likewise a working name.*
+
+---
+
+## 0. Definitions, so the rest can be read
+
+A reviewer of Draft 4 could not answer six questions from the text. They are answered here first, and the sections that owe them are named.
+
+**What eFLR is.** The Scope B token: a protocol-issued, value-accruing claim on FLR held under protocol custody. It does not exist under Scope A. Draft 1 put it in the title; Draft 5 does not, because the recommendation is A and A issues nothing.
+
+**Where the router's stake comes from, and who controls it.** Under Scope A, nowhere: the router holds no stake. It publishes a target allocation every reward epoch, and pools above the threshold keep their capital, their keys and their tokens, and are paid staking and FSP rewards only on the portion of their delegation that matches the target within a tolerance ε (§4). Under Scope B, from deposits, held under the custody envelope in §8.
+
+**The three numbers.** Uptime over the evaluation window, the entity's realised FSP reward rate per unit of stake (the on-chain measure of data quality), and the entity's declared fee, floored at 20% (§6.4–6.6).
+
+**What the 20% floor is a floor of.** The entity's share of rewards on anything staked or delegated to it, set network-wide by FIP.16 §5.2 "to prevent a race to the bottom".
+
+**What 11% → 5% is measured against.** Total active P-chain stake, 21.51 billion FLR on 5 September 2026 (Appendix B), per pool as defined in Open Question 9.
+
+**What happens to overage above the line.** Nothing is seized and nothing is moved by the protocol. The portion of a pool's delegation that sits outside the published target earns no staking or FSP rewards for that epoch; the pool brings it inside from maturing delegations on its own schedule, and the schedule in §4 gives it two quarters before the line reaches it.
 
 ---
 
@@ -89,7 +109,7 @@ Three networks have faced this and answered differently. The answers are the des
 
 **Flare: the market's own answer (2026).** Two Flare operators, Steven Hudspeth and Jon, have built the two halves of this document's problem without the Foundation, and the RFP would be dishonest not to put them in the precedent list. A bond NFT: capital picks its operator in public, on an immutable contract with no upgrade key and a multisig on the funds, and what it funds is self-bond, the capacity the router in Section 6 can only wait for. And an LST kit: an immutable token, modules behind a timelock, a single emergency power that is a pause and expires, keys bounded so that a theft is a leak rather than a drain, one instance per provider with its own keys, and operators auditing each other's contracts before deployment. Contract addresses and terms are to be added when the authors supply them.
 
-On custody the kit is the answer Section 5 asks for, and the "Ceiling" dispatch asked Sceptre for, and it exists today. On selection and on concentration it is not an answer, for two reasons this document has already used against itself. Liquid staking tokens win on liquidity and integrations, not on key design (11.4); Kinetic will not list twenty tokens and Spectra will not build twenty curves, so twenty kit instances either stay small and unintegrated while capital stays where the integrations are, or one of them consolidates and becomes sFLR with a better custody model and the same selection problem. And a bond NFT is capital choosing its operator in public, which is transparent and is the mechanism that built Lido; visibility changes who can see the choice, not who makes it. Lesson: the market on Flare has bounded custody. Whether it bounds concentration is what Scope A exists to test, and only above the threshold where the market has already produced the thing FIP.05 was written against.
+On custody the kit is the answer Section 5 asks for, and the "Ceiling" dispatch asked Sceptre for, and it exists today. On selection and on concentration it is not yet an answer, and Draft 4's version of why was too strong. Draft 4 said Kinetic will not list twenty tokens and Spectra will not build twenty curves. The kit's authors replied that every instance is deployed from one frozen template with one ABI, so an integrator writes one adapter and a registry of instances deployed from the verified bytecode enumerates the set, which is how ERC-4626 vaults are integrated today. That is correct, and it removes the engineering half of the objection; it also makes the registry itself an instance of Scope 0. What it does not remove, and the authors say so, is the other half: a shared ABI does not set a collateral factor or make a thin market deep, and liquidity and risk parameters are per instance. So the question is not twenty tokens versus one. It is whether onboarding can be made cheap enough that twenty thin markets behave like one deep one, and the answer to that is not in this document or yet in theirs. Until it is, the two outcomes stand: instances stay small and thin while capital stays where depth is, or one consolidates and becomes sFLR with a better custody model and the same selection problem. And a bond NFT is capital choosing its operator in public, which is transparent and is the mechanism that built Lido; visibility changes who can see the choice, not who makes it. Lesson: the market on Flare has bounded custody. Whether it bounds concentration is what Scope A exists to test, and only above the threshold where the market has already produced the thing FIP.05 was written against.
 
 The specifics are favourable in two ways. Flare's validator set is small (179 active), and its validators are already FTSO data providers whose performance the protocol measures every reward epoch on-chain. The information an algorithmic router needs is already being computed. And Flare has already crossed the line Ethereum would not: FIP.16 designated a builder. A network that has enshrined block building has fewer principled objections left to enshrining delegation.
 
@@ -109,7 +129,7 @@ The threshold is a political fact before it is a number. Sceptre is above any th
 
 **Scope C — Both.** The protocol issues eFLR and requires every pool above the threshold to route through the same router eFLR uses. Private pools become front-ends on protocol rails; their remaining product is distribution, integration and yield strategy on top of the base rate.
 
-The recommendation of this RFP has changed between drafts and the change should be visible. Draft 1 recommended C staged, with B hung on the Stage 3 consensus change. Draft 3 recommends A as the product, in four deliverables that do not depend on each other: a percentage cap per entity in FIP.02/FIP.05; an on-chain allocation oracle that publishes T, Y, C_max and capacity per entity, published before it binds anything; Scope A as a reward-eligibility rule with the threshold schedule above, tested on Songbird for eight to twelve epochs; and contract-originated P-chain delegation as its own FIP, independent of the builder roadmap. B comes after that FIP, or after a reviewed FCC key set with a published image hash and a 2-of-3 that is not Foundation-only, and if neither exists it does not come. A alone leaves the four-keys problem with the pools, bounded by the contract terms the earlier dispatch asked for. That is a smaller claim than Draft 1 made, and the only one the network can ship without new custody.
+The recommendation of this RFP has changed between drafts and the change should be visible. Draft 1 recommended C staged, with B hung on the Stage 3 consensus change. Draft 3 recommends A as the product, in deliverables that do not depend on each other. Draft 5 adds one at the front and calls it Scope 0, because an operator reviewer put it better than the document had: make the disclosure machine-readable. Entity identity, self-bond source, reward accounting, node-to-entity mapping, published on-chain in a form that anyone can check with one script and get the same answer. That is the chain enforcing facts, and it needs no router, no threshold and no consensus change; it is the generalisation of the allocation oracle below, and it is where this document and the operators who built the kit in Section 3 agree without reservation. The deliverables in order: Scope 0; a percentage cap per entity in FIP.02/FIP.05; an on-chain allocation oracle that publishes T, Y, C_max and capacity per entity, published before it binds anything; Scope A as a reward-eligibility rule with the threshold schedule above, tested on Songbird for eight to twelve epochs; and contract-originated P-chain delegation as its own FIP, independent of the builder roadmap. B comes after that FIP, or after a reviewed FCC key set with a published image hash and a 2-of-3 that is not Foundation-only, and if neither exists it does not come. A alone leaves the four-keys problem with the pools, bounded by the contract terms the earlier dispatch asked for. That is a smaller claim than Draft 1 made, and the only one the network can ship without new custody.
 
 ### 4.1 Decision matrix
 
@@ -271,6 +291,12 @@ FIP.16's floor exists to make independent entities viable. A router that delegat
 
 The second thing the router does to entities is the objection operators raise hardest, and the RFP would rather defend it than soften it. Above the threshold, the router buys compliant boxes: it allocates on uptime, data quality and fee, and it pays nothing for marketing, for raising bonds in public, for teaching, for shipping at one in the morning. An operator whose stake depends on how well it courts stakers finds that work worth nothing to the router. That is the design. FIP.16 §1.1 says where infrastructure income is supposed to come from: the economic incentives for providers "will transition from FLR inflation to organic yield driven by on-chain activity", meaning FDC request fees, FCC fees, and feeds that have customers. An entity competing for stakers is competing for the wrong capital. On a network with 179 validators and 21 billion FLR staked, marketing to stakers is a distribution fight over one pool of stake; it moves delegation between entities and adds nothing the network did not already have. The router makes that fight worthless above the line and leaves feed quality and feed customers as the axis that remains. It does not pay the ecosystem to stop building. It stops paying for the one kind of building FIP.16 has already said it will stop paying for, and leaves the operators' capital, attention and hours for the kind it said it would.
 
+An operator asked whether that is what Flare has said or what the author reads into it, and the answer has to be split. Documented: FIP.16 §1.1, that provider incentives "will transition from FLR inflation to organic yield driven by on-chain activity"; §4.1 and §4.3, that FDC and FCC fees flow to entities and their delegators; §5.2, that the floor exists because entities "have to run independent infrastructure and data acquisition services" and this "requires a level of professionalism and sufficient funding"; §4.4.1, that "the role of data providers will expand and become more and more prominent". The author's read, and not in any FIP: that this makes stakers the wrong capital for an entity to compete for, and that a network which has said income will come from on-chain activity has said, by implication, where it wants operators' effort to go. FIP.16 does not say what a validator should be or how one is supposed to get funded. Appendix F sets the quotations beside the inferences so a reader can see which is which. Where this document says "FIP.16 wants", read "FIP.16 says X, and the author concludes Y".
+
+The same operator put the objection the router has to answer or lose: a validator needs a bond, a bond needs capital, raising capital needs people who believe in you, and that is brand and hustle; if the router pays nothing for that above the line, what is left is already being rich, and that is not a cap on concentration but a moat around whoever arrived first. What is the answer for the operator starting tonight with a machine and no money?
+
+The answer is in the document's own arithmetic and had not been drawn out. Two things fund a validator and they are not the same thing. The self-bond, 1 million FLR minimum, which the operator has to own or raise; that is where brand, hustle and a bond NFT do their work, and the router does not touch it, above or below any line. And the delegation on top, up to 15× the bond, which today comes from pools and comes on terms a pool operator sets. The operator starting tonight is an entity, not a pool; no threshold in this document applies to him; and the delegation he cannot get today without a relationship is exactly what the router gives him once he meets three public numbers, from the largest delegators on the network, without a pitch. Brand raises the bond; performance fills the multiple. The bond NFT and the router are not competitors; one supplies the capital the other can only wait for, and the other supplies the delegation the first cannot promise. The moat objection is right about a router that allocated all delegation on the network. This one allocates only the delegation of pools above a line, and the operator with no money is on the other side of it, receiving.
+
 ---
 
 ## 8. Governance Envelope
@@ -412,7 +438,14 @@ All figures below are the ones the argument leans on. Estimates are marked and t
 | Do-nothing baseline (§2.5) | 1.18bn excess × ~6.3% × 20% ≈ 15–19M FLR/yr in third-party fees | derived from the above |
 | eFLR vs self-validating pool (§7.1) | 0.76g vs 0.78g net to depositor | derived |
 
+| sFLR total supply | 1.196963bn sFLR | Flare explorer, contract 0x12e6…c2BB, 8 Sep 2026 (author-verified) |
+| sFLR supply, peak | 1.339bn sFLR, 3 Jun 2026 | S. Hudspeth, daily on-chain totalSupply, 400 days (not independently re-run) |
+| sFLR supply, change | −10.6% peak to 8 Sep; September −58.5M, the worst month in the series; 5 and 6 Sep among the ten largest burn days | same |
+| sFLR exchange rate, implied | ~1.8–2.0 FLR per sFLR | CoinGecko sFLR $0.0122 / FLR ~$0.0066, 8 Sep 2026; reconciles 1.197bn shares with the 2.384bn FLR pool figure |
+
 Bifrost is the live demonstration of the document's first claim: the node ceiling already touches entity concentration (four nodes at cap is 1.14bn) and touches the pool not at all.
+
+Two notes on the sFLR rows. The supply series is in shares; the pool figure this document uses is in FLR, and because the exchange rate rises with rewards, a falling share count understates the outflow less than a falling FLR balance would overstate it. Sceptre's own dashboard labels an FLR-denominated line as "Total sFLR", which rises with rewards while shares leave; the share count is the clean number. And the decline began on 3 June, three months before the identity breach was public, so the breach accelerated an outflow it did not start.
 
 ## Appendix C — Liquidity under stress
 
@@ -445,7 +478,20 @@ Readings. A 5% reserve absorbs a 5% one-day run and nothing larger. A 90-day lad
 
 ## Reviews
 
-Draft 2 responded to a structured written review; Draft 3 to a second that found the Stage 3 gap and the missing enforcement point. Draft 4 responds to Steven Hudspeth (@hudspeth589) and Jon, operators on Flare who have built the LST kit and bond NFT described in Section 3, and whose objection that the router pays for compliant boxes is answered in 7.4 by agreeing with it. Their interest is disclosed as the author's is: they build a competitor to sFLR and, above the threshold, to this proposal.
+Draft 2 responded to a structured written review; Draft 3 to a second that found the Stage 3 gap and the missing enforcement point. Draft 4 responds to Steven Hudspeth (@hudspeth589) and Jon, operators on Flare who have built the LST kit and bond NFT described in Section 3, and whose objection that the router pays for compliant boxes is answered in 7.4 by agreeing with it. Draft 5 responds to their second round: the definitions in Section 0, Scope 0 in Section 4, the shared-ABI correction in Section 3, the moat objection and the documented-versus-inferred split in 7.4, the sFLR supply series in Appendix B, and Appendix F. Their interest is disclosed as the author's is: they build a competitor to sFLR and, above the threshold, to this proposal.
+
+## Appendix F — What FIP.16 says, and what this document infers from it
+
+Quotations are from proposals.flare.network/FIP/FIP_16.html (accepted 24 April 2026). Inferences are the author's.
+
+| FIP.16 says | Where | This document infers | Status |
+|---|---|---|---|
+| "the economic incentives for infrastructure providers – and their delegators – will transition from FLR inflation to organic yield driven by on-chain activity" | §1.1 | Provider income is meant to come from activity fees, not from winning delegation | Inference; the sentence is about the source of rewards, not about how providers compete for them |
+| FDC fees "distributed to infrastructure providers and their delegators"; FCC fees "distributed directly to entities and stakers" | §4.1, §4.3 | Feeds and attestations that have customers are the activity the network pays for | Direct reading |
+| "the role of data providers will expand and become more and more prominent" | §4.4.1 | Data quality is the axis the network expects entities to compete on | Inference |
+| Entities "have to run independent infrastructure and data acquisition services … This requires a level of professionalism and sufficient funding. To prevent a race to the bottom and dumping strategies, a minimum 20% entity fee will be applied network wide" | §5.2 | The floor is a funding mechanism for infrastructure, and a fee market above it was not the intention | Inference; §5.2 forbids a race to the bottom, it does not forbid a race to the top |
+| "further incentivize staking over delegation … to increase locked supply and thus ensure economic stability for validators" | §1 | P-chain stake is the leg the network wants capital in; a pool's C-chain leg should be the minimum liquidity needs | Direct reading, applied in §6.9 |
+| Nothing on what a validator should be, how one is funded, or whether marketing to stakers is wanted | — | This document's 7.4 argument that stakers are "the wrong capital" | Author's position, not the network's |
 
 ## 13. Sources
 

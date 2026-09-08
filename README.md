@@ -1,9 +1,11 @@
-# RFP — Enshrined Liquid Staking on Flare (eFLR)
+# RFP — Enshrined Delegation on Flare
 
-A request for proposal for a **protocol-owned liquid staking layer** on Flare: an algorithmic delegation router with per-entity caps the chain enforces, optionally a protocol-issued token (eFLR) under protocol custody, and the governance envelope that would have to bound it. Written against the September 2026 Sceptre case and the FIP.16 precedent of internalising an extraction the network could not police.
+*A router first; eFLR only if custody can be shown*
+
+A request for proposal for a **protocol-published delegation rule** on Flare above a concentration threshold, enforced as a reward-eligibility filter, with machine-readable disclosure first; and for the protocol-owned liquid staking token (eFLR) that could sit behind it only if custody can be shown in a key matrix. Written against the September 2026 Sceptre case and the FIP.16 precedent of internalising an extraction the network could not police.
 
 **Author:** Janus the Watcher · [@XRPWatcherJanus](https://x.com/XRPWatcherJanus)<br>
-**Status:** Draft 4 (7 Sep 2026) — open for community review · see [CHANGELOG](CHANGELOG.md)
+**Status:** Draft 5 (8 Sep 2026) — open for community review · see [CHANGELOG](CHANGELOG.md)
 
 ---
 
@@ -27,19 +29,20 @@ The router allocates by trust weight × net-yield weight, bounded by per-entity 
 
 ## Structure
 
+0. Definitions — eFLR, where the router's stake comes from, the three numbers, the 20% floor, the threshold's denominator, overage
 1. Executive Summary
 2. The Problem — what the current rules measure; what FIP.16 changed; the proxy inevitability; the FIP.16 precedent (what is parallel, what is not); the do-nothing baseline
 3. Precedents — Polkadot nomination pools, Cosmos LSM, Ethereum's road not taken, Flare's own market answer (LST kit, bond NFT)
-4. Scope Options — router as reward filter / token / both; threshold schedule; decision matrix with dated conditions
+4. Scope Options — Scope 0 machine-readable disclosure; router as reward filter / token / both; threshold schedule; decision matrix
 5. The Settlement Problem — two chains, two delegations; FCC-managed keys vs a P-chain primitive (own FIP); mirror limit; exit queue, discount policy, griefing
 6. Architecture — token accounting, capital sources, router formula with capacity and rebalance budget, eligibility, trust weight, net-yield weight and its endogeneity, cap, correlation (advisory), two yields
-7. Economics — base rate, fee, who earns what, what the router does to the 20% floor and to staker marketing
+7. Economics — base rate, fee, who earns what, the 20% floor, staker marketing (what FIP.16 says vs. what the author infers), the moat objection
 8. Governance Envelope — immutable core, timelocked parameters, ragequit, custody matrix, staged transition, deadlock rule
 9. Composability — why not to enshrine PT/YT; eFLR as FAssets collateral
 10. Open Questions — eleven, ordered by design impact
 11. Failure Modes — twelve, hardest first, with a monitoring protocol
 12. What Ships First
-Appendices — A settlement bridge spec · B numbers with dates · C liquidity under stress · D Songbird test plan · E threat model
+Appendices — A settlement bridge spec · B numbers with dates (incl. sFLR supply series) · C liquidity under stress · D Songbird test plan · E threat model · F what FIP.16 says vs. what is inferred
 13. Sources
 
 ## Contributing

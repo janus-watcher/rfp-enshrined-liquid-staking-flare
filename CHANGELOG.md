@@ -2,6 +2,21 @@
 
 All notable changes to this RFP. Versioned snapshots live in [`drafts/`](../drafts/); the push-ready set lives in [`github_upload/`](.).
 
+## Draft 5 — 2026-09-08
+
+Second round of operator feedback (S. Hudspeth). Title changed.
+
+- **Title:** "Enshrined Delegation on Flare — a router first; eFLR only if custody can be shown". eFLR is the Scope B token and the recommendation is A; the old title named a thing the recommendation does not ship.
+- **§0 Definitions** added: six questions a reviewer could not answer from Draft 4 (what eFLR is; where the router's stake comes from under A vs B; the three numbers; what the 20% is a floor of; the threshold's denominator; overage above the line).
+- **Scope 0 — machine-readable disclosure** added as the first deliverable in §4 (entity identity, self-bond source, reward accounting, node-to-entity mapping; one public check). Credited to the reviewer; it is the generalisation of the allocation oracle and the point of agreement.
+- **§3 kit:** Draft 4's "twenty tokens" corrected. Shared ABI + verified-bytecode registry (the 4626 pattern) removes the engineering objection and is itself Scope 0; liquidity depth and risk parameters per instance remain, as the authors concede.
+- **§7.4 documented vs inferred:** FIP.16 §1.1/§4.1/§4.3/§4.4.1/§5.2 quoted; "stakers are the wrong capital" marked as the author's inference. **Appendix F** table of quotations vs inferences.
+- **§7.4 moat objection** answered: brand raises the bond, performance fills the 15× multiple; the operator starting tonight is an entity below every line, and the router is the delegation he cannot get today without a relationship. Bond NFT and router complementary.
+- **Appendix B:** sFLR share supply 1.196963bn (explorer, author-verified 8 Sep); peak 1.339bn 3 Jun, −10.6%, September −58.5M (reviewer's series, not re-run); implied exchange rate ~1.8–2.0 reconciling shares with the 2.384bn FLR pool figure; note on Sceptre's FLR-denominated "Total sFLR" chart; decline predates the breach.
+- Reviews section updated.
+
+Commit: `Draft 5: title, definitions, Scope 0 disclosure, shared-ABI correction, FIP.16 said vs inferred, moat answer, sFLR supply series`
+
 ## Draft 4 — 2026-09-07
 
 Response to operator feedback (Steven Hudspeth, @hudspeth589, with Jon) received via X chat. Four changes, none of them a concession.
