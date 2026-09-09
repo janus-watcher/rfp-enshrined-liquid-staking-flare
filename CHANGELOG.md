@@ -2,6 +2,22 @@
 
 All notable changes to this RFP. Versioned snapshots live in [`drafts/`](../drafts/); the push-ready set lives in [`github_upload/`](.).
 
+## Draft 6 — 2026-09-09
+
+Third round of operator feedback (S. Hudspeth). The recommendation moves again, toward less protocol, and §4.1 says why.
+
+- **Title:** "Enshrined Disclosure on Flare — a curve, not a router; eFLR only if custody can be shown".
+- **Axis changed.** What failed was undisclosed concentration, not concentration; a rule on size cannot distinguish a deception from a labelled choice (per-provider tokens with "one operator" on the tin). §1, §2.3, §3.
+- **Router retired to Appendix G.** The reward-eligibility cliff with its 11→8→5% schedule and tolerance ε is kept there with the reasons: it measured the wrong thing and needed an allocator, and the allocator carried 11.1, 11.2 and the FTSO-selector problem in 6.9.
+- **§6.10 The curve.** r_i = r·f(s_i), f = 1 below s0, (s0/s)^k above; proposal s0 = 3%, k = 1, which is the existing 5% vote-power cap's logic per operator and without the kink. Two parameters under FIP.11. Incidence on delegators stated (§0, §4.1) and compared with chill and cliff.
+- **§4 rewritten as "What to Build":** Scope 0 → percentage cap → curve → oracle as information → Scope B unchanged. Decision matrix rebuilt. Sequencing evidence: sFLR −107M FLR in eight days after 31 Aug (Appendix B).
+- **§2.3** reframed: the proxy problem is a disclosure problem with an economics problem behind it; pool selection bounded by the 15× factor; kickbacks invisible under any design.
+- **§7.4** rewritten: the curve does nothing to the floor and nothing to marketing; the "router buys boxes" argument withdrawn as moot; the moat objection does not arise.
+- **§11** renumbered: 11.1, 11.2, 11.4, 11.7 scoped to B; 11.3 restated for a curve; new 11.12 curve too flat/steep/gamed with a Songbird split test; enclave now 11.13. 11.8 (Ethereum) largely conceded for the instruments, retained against B.
+- OQ 4 (curve parameters), OQ 9 (operator definition), Appendix D (split test, rate check), Appendix E, Reviews updated.
+
+Commit: `Draft 6: disclosure and a curve; router retired to Appendix G; axis = disclosed vs undisclosed concentration`
+
 ## Draft 5 — 2026-09-08
 
 Second round of operator feedback (S. Hudspeth). Title changed.
